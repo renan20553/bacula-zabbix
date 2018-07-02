@@ -12,7 +12,7 @@ if [ ! -x $zabbixSender ] ; then exit 5 ; fi
 
 # Chose which database command to use
 case $baculaDbSgdb in
-  P) sql="PGPASSWORD=$baculaDbPass /usr/bin/psql -h$baculaDbAddr -p$baculaDbPort -U$baculaDbUser -d$baculaDbName -c" ;;
+  P) sql="env PGPASSWORD=$baculaDbPass /usr/bin/psql -h$baculaDbAddr -p$baculaDbPort -U$baculaDbUser -d$baculaDbName -t -A -c" ;;
   M) sql="/usr/bin/mysql -NB -h$baculaDbAddr -P$baculaDbPort -u$baculaDbUser -p$baculaDbPass -D$baculaDbName -e" ;;
   *) exit 7 ;;
 esac
@@ -42,6 +42,8 @@ esac
 # Get client's name from database
 baculaClientName=$($sql "select Client.Name from Client,Job where Job.ClientId=Client.ClientId and Job.JobId=$baculaJobId;" 2>/dev/null)
 if [ -z $baculaClientName ] ; then exit 15 ; fi
+
+baculaClientName=${baculaClientName%-fd}
 
 # Initialize return as zero
 return=0
