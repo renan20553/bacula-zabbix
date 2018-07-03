@@ -81,7 +81,7 @@ if [ $? -ne 0 ] ; then return=$(($return+16)) ; fi
 M)
 
 # Get from database the time spent by the Job and send it to Zabbix server
-baculaJobTime=$($sql "select timestampdiff(realendtime,StartTime,EndTime) from Job where JobId=$baculaJobId;" 2>/dev/null)
+baculaJobTime=$($sql "select timestampdiff(second,StartTime,EndTime) from Job where JobId=$baculaJobId;" 2>/dev/null)
 $zabbixSender -z $zabbixSrvAddr -p $zabbixSrvPort -s $baculaClientName -k "bacula.$level.job.time" -o $baculaJobTime >/dev/null 2>&1
 if [ $? -ne 0 ] ; then return=$(($return+8)) ; fi
 
